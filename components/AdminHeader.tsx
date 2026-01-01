@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, Bell, User } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 interface HeaderProps {
     onMenuClick: () => void;
@@ -9,6 +10,17 @@ interface HeaderProps {
 }
 
 export default function AdminHeader({ onMenuClick, title = "Admin Dashboard" }: HeaderProps) {
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        fetchUser();
+    }, []);
+
     return (
         <header className="bg-white shadow-sm border-b border-slate-200 h-16 sticky top-0 z-20 flex items-center justify-between px-4 lg:px-8">
             <div className="flex items-center gap-4">
@@ -31,7 +43,7 @@ export default function AdminHeader({ onMenuClick, title = "Admin Dashboard" }: 
 
                 <div className="flex items-center gap-3">
                     <div className="text-right hidden sm:block">
-                        <p className="text-sm font-bold text-slate-700">Admin User</p>
+                        <p className="text-sm font-bold text-slate-700">{user?.email?.split('@')[0] || "Admin User"}</p>
                         <p className="text-xs text-slate-500">Administrator</p>
                     </div>
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white shadow-md">

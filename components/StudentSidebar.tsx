@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LayoutDashboard, LogOut, User, X, ChevronRight, GraduationCap, Clock, ChevronLeft, ChevronDown } from "lucide-react";
 import { Level } from "@/types";
+import { logout } from "@/app/auth/actions";
 
 interface SidebarProps {
     children?: React.ReactNode;
@@ -212,6 +213,7 @@ export default function StudentSidebar({ children, isOpen, onClose, isCollapsed 
                     <div className="p-3 border-t border-slate-100 bg-slate-50/50 flex flex-col gap-2">
                         <div className="">
                             <button
+                                onClick={() => logout()}
                                 className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-700 hover:shadow-sm transition-all group ${isCollapsed ? 'justify-center' : ''}`}
                                 title={isCollapsed ? "Keluar" : undefined}
                             >

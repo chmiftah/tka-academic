@@ -3,17 +3,31 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Menu, Bell, User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
+import { logout } from "@/app/auth/actions";
 
 interface HeaderProps {
     onMenuClick: () => void;
 }
 
+
 export default function StudentHeader({ onMenuClick }: HeaderProps) {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        fetchUser();
+    }, []);
 
     // Close dropdown when clicking outside
     useEffect(() => {
+        // ... existing click outside logic
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsProfileOpen(false);
@@ -60,8 +74,8 @@ export default function StudentHeader({ onMenuClick }: HeaderProps) {
                         className="flex items-center gap-3 p-1.5 pl-3 pr-2 rounded-full border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 hover:shadow-sm transition-all group"
                     >
                         <div className="flex flex-col items-end hidden sm:flex">
-                            <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-700">Student User</span>
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">TKA-2024-001</span>
+                            <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-700">{user?.email?.split('@')[0] || "Student"}</span>
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">SISWA</span>
                         </div>
                         <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full flex items-center justify-center text-white shadow-md shadow-indigo-200">
                             <User className="w-4 h-4" />
@@ -79,8 +93,8 @@ export default function StudentHeader({ onMenuClick }: HeaderProps) {
                     >
                         <div className="p-2 border-b border-slate-50">
                             <div className="px-3 py-2">
-                                <p className="text-sm font-bold text-slate-800">Student User</p>
-                                <p className="text-xs text-slate-500">student@example.com</p>
+                                <p className="text-sm font-bold text-slate-800">{user?.email?.split('@')[0] || "User"}</p>
+                                <p className="text-xs text-slate-500 truncate">{user?.email || "loading..."}</p>
                             </div>
                         </div>
                         <div className="p-1 space-y-0.5">
@@ -93,6 +107,7 @@ export default function StudentHeader({ onMenuClick }: HeaderProps) {
                                 Edit Profile
                             </Link>
                             <button
+                                onClick={() => logout()}
                                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
                             >
                                 <LogOut className="w-4 h-4" />
