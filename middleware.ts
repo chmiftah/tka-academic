@@ -35,6 +35,12 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
+    // --- DEBUGGING START ---
+    console.log(`[Middleware] Path: ${request.nextUrl.pathname}`);
+    console.log(`[Middleware] Cookies: ${request.cookies.getAll().length}`);
+    console.log(`[Middleware] User: ${user?.id || 'NO USER'}`);
+    // --- DEBUGGING END ---
+
     // Protected routes pattern
     const protectedPaths = ["/dashboard", "/exam", "/result", "/admin"];
     const isProtectedRoute = protectedPaths.some((path) =>
@@ -43,9 +49,11 @@ export async function middleware(request: NextRequest) {
 
     // Redirect logic
     if (!user && isProtectedRoute) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/login";
-        return NextResponse.redirect(url);
+        console.warn(`[Middleware] BLOCKED: No user for protected route: ${request.nextUrl.pathname}`);
+        // TEMPORARILY DISABLED FOR DEBUGGING
+        // const url = request.nextUrl.clone();
+        // url.pathname = "/login";
+        // return NextResponse.redirect(url);
     }
 
     if (user && (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register"))) {

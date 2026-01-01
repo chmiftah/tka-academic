@@ -41,14 +41,6 @@ interface Question {
     max_score?: number;
     options: Option[];
 }
-const supabase = await createClient();
-
-// 1. Auth Check
-const { data: { user }, error: authError } = await supabase.auth.getUser();
-if (authError || !user) {
-    throw new Error("Unauthorized: You must be logged in to submit.");
-}
-
 const EXAM_DURATION_SECONDS = 2700;//45 minutes
 
 export default function ExamSubjectRunner() {
@@ -141,6 +133,13 @@ export default function ExamSubjectRunner() {
 
         try {
             const supabase = createClient();
+
+            // Fetch User
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            if (authError || !user) {
+                throw new Error("Unauthorized: You must be logged in to submit.");
+            }
+
             let totalScore = 0;
             const detailedAnswers: {
                 question_id: string;
