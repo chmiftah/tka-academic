@@ -212,8 +212,8 @@ export default function ExamPackagePage() {
             if (subjectsError) throw subjectsError;
 
             // 3. Filter out already assigned subjects
-            const assignedIds = new Set(assignedData?.map(ps => ps.subject_id));
-            const available = (allSubjects || []).filter(s => !assignedIds.has(s.id));
+            const assignedIds = new Set<number>(assignedData?.map((ps: any) => ps.subject_id as number) || []);
+            const available = (allSubjects || []).filter((s: any) => !assignedIds.has(s.id));
 
             setAvailableSubjects(available);
             setSelectedSubjectId("");

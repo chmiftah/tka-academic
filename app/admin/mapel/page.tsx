@@ -107,7 +107,7 @@ export default function SubjectPage() {
 
             if (error) throw error;
 
-            const ids = new Set(data?.map(item => item.subject_id));
+            const ids = new Set<number>(data?.map((item: any) => item.subject_id as number) || []);
             setPackageSubjectIds(ids);
         } catch (error) {
             console.error("Error fetching package subjects:", error);
