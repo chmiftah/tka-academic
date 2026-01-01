@@ -25,7 +25,7 @@ export default function LevelFilter({ levels }: LevelFilterProps) {
         } else {
             params.delete("level_id");
         }
-        router.push(`/dashboard?${params.toString()}`);
+        router.push(`/exam?${params.toString()}`);
     };
 
     return (
