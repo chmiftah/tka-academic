@@ -17,6 +17,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-latex-next": "^3.0.0",
+    "recharts": "^3.6.0",
     "use-debounce": "^10.0.6",
     "zustand": "^5.0.9"
   },

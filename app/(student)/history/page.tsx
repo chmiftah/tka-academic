@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
-import { Loader2, Calendar, Award, ChevronRight, FileText, Clock } from "lucide-react";
+import { Loader2, Calendar, ChevronRight, Search, Filter, X, ChevronLeft } from "lucide-react";
 
 interface ExamHistory {
     id: string;
@@ -17,44 +17,118 @@ interface ExamHistory {
     };
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function HistoryPage() {
     const [history, setHistory] = useState<ExamHistory[]>([]);
+    const [filteredHistory, setFilteredHistory] = useState<ExamHistory[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Filter State
+    const [filterDate, setFilterDate] = useState("");
+    const [filterName, setFilterName] = useState("");
+    const [filterPackage, setFilterPackage] = useState("");
+
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         const fetchHistory = async () => {
             const supabase = createClient();
 
-            // In a real app, filtering by user_id from auth session is crucial.
-            // Here we might fetch all or filter by 'student_name' if we had it stored in session.
-            // For this demo/MVP, we'll fetch all results (or filter if possible).
-            // Since we don't have auth enforced globally yet, we just list recently created results.
-
-            const { data, error } = await supabase
+            // 1. Fetch Results first (No JOIN due to missing FK)
+            const { data: results, error: resultError } = await supabase
                 .from("exam_results")
                 .select(`
                     id,
                     student_name,
                     total_score,
                     created_at,
-                    exam_package_id,
-                    exam_packages (
-                        title,
-                        level_id
-                    )
+                    exam_package_id
                 `)
                 .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error("Error fetching history:", error);
-            } else {
-                setHistory(data || []);
+            if (resultError) {
+                console.error("Error fetching history:", resultError);
+                setLoading(false);
+                return;
             }
+
+            if (!results || results.length === 0) {
+                setHistory([]);
+                setFilteredHistory([]);
+                setLoading(false);
+                return;
+            }
+
+            // 2. Extract Package IDs and Fetch Packages
+            const packageIds = Array.from(new Set(results.map(r => r.exam_package_id))).filter(Boolean);
+
+            let packagesMap: Record<number, { title: string, level_id: number }> = {};
+
+            if (packageIds.length > 0) {
+                const { data: packages, error: packageError } = await supabase
+                    .from("exam_packages")
+                    .select("id, title, level_id")
+                    .in("id", packageIds);
+
+                if (packageError) {
+                    console.error("Error fetching packages:", packageError);
+                } else if (packages) {
+                    packages.forEach(p => {
+                        packagesMap[p.id] = { title: p.title, level_id: p.level_id };
+                    });
+                }
+            }
+
+            // 3. Merge Data
+            const mergedHistory: ExamHistory[] = results.map(r => ({
+                ...r,
+                exam_packages: packagesMap[r.exam_package_id] || { title: "Ujian Tidak Diketahui", level_id: 0 }
+            }));
+
+            setHistory(mergedHistory);
+            setFilteredHistory(mergedHistory);
             setLoading(false);
         };
 
         fetchHistory();
     }, []);
+
+    // Filter Logic
+    useEffect(() => {
+        let temp = history;
+
+        if (filterDate) {
+            temp = temp.filter(item => item.created_at.startsWith(filterDate));
+        }
+
+        if (filterName) {
+            const lowerName = filterName.toLowerCase();
+            temp = temp.filter(item => item.student_name.toLowerCase().includes(lowerName));
+        }
+
+        if (filterPackage) {
+            const lowerPkg = filterPackage.toLowerCase();
+            temp = temp.filter(item =>
+                (item.exam_packages?.title || "").toLowerCase().includes(lowerPkg)
+            );
+        }
+
+        setFilteredHistory(temp);
+        setCurrentPage(1); // Reset to first page when filtering
+    }, [filterDate, filterName, filterPackage, history]);
+
+    const resetFilters = () => {
+        setFilterDate("");
+        setFilterName("");
+        setFilterPackage("");
+    };
+
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedHistory = filteredHistory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     if (loading) {
         return (
@@ -65,80 +139,185 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="p-6 lg:p-10 max-w-5xl mx-auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-[1920px] mx-auto space-y-8">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-slate-800">Riwayat Ujian</h1>
-                <p className="text-slate-500 mt-1">Daftar ujian yang telah kamu selesaikan.</p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-800">Riwayat Ujian</h1>
+                    <p className="text-slate-500 mt-1">Daftar lengkap hasil ujian yang telah diselesaikan.</p>
+                </div>
             </div>
 
-            {/* List */}
-            <div className="space-y-4">
-                {history.length === 0 ? (
-                    <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 border-dashed">
-                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <FileText className="w-8 h-8 text-slate-300" />
-                        </div>
-                        <h3 className="text-lg font-medium text-slate-800">Belum ada riwayat</h3>
-                        <p className="text-slate-500">Kamu belum menyelesaikan ujian apapun.</p>
-                        <Link href="/exam" className="inline-block mt-4 text-indigo-600 font-medium hover:underline">
-                            Mulai Ujian Sekarang
-                        </Link>
+            {/* Filters */}
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                    <Filter className="w-4 h-4" />
+                    Filter Data
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Tanggal</label>
+                        <input
+                            type="date"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all"
+                            value={filterDate}
+                            onChange={(e) => setFilterDate(e.target.value)}
+                        />
                     </div>
-                ) : (
-                    history.map((item) => (
-                        <div
-                            key={item.id}
-                            className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all group"
+                    <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Nama Siswa</label>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Cari nama..."
+                                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all"
+                                value={filterName}
+                                onChange={(e) => setFilterName(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Paket Soal</label>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Cari paket..."
+                                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all"
+                                value={filterPackage}
+                                onChange={(e) => setFilterPackage(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex items-end">
+                        <button
+                            onClick={resetFilters}
+                            className="w-full px-4 py-2 bg-slate-100 text-slate-600 font-medium text-sm rounded-xl hover:bg-slate-200 hover:text-slate-800 transition-colors flex items-center justify-center gap-2"
                         >
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                {/* Left Info */}
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                                        <Calendar className="w-3 h-3" />
-                                        <span>{new Date(item.created_at).toLocaleDateString("id-ID", {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric'
-                                        })}</span>
-                                        <span>•</span>
-                                        <Clock className="w-3 h-3" />
-                                        <span>{new Date(item.created_at).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })}</span>
-                                    </div>
-                                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-indigo-700 transition-colors">
-                                        {item.exam_packages?.title || "Ujian Tanpa Judul"}
-                                    </h3>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs px-2 py-1 rounded bg-slate-100 text-slate-600 font-medium border border-slate-200">
-                                            {item.student_name}
-                                        </span>
-                                    </div>
-                                </div>
+                            <X className="w-4 h-4" />
+                            Reset Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                                {/* Right Stats & Action */}
-                                <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-50">
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-xs font-medium text-slate-400 uppercase">Nilai Akhir</span>
-                                        <div className="flex items-center gap-2">
-                                            <Award className="w-5 h-5 text-indigo-500" />
-                                            <span className="text-2xl font-bold font-mono text-slate-800">
+            {/* Table */}
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200">
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-16 text-center">No</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal & Waktu</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Siswa</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Paket Soal</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Nilai</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {paginatedHistory.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                                        <div className="flex flex-col items-center justify-center gap-3">
+                                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center">
+                                                <Search className="w-6 h-6 text-slate-300" />
+                                            </div>
+                                            <p>Data tidak ditemukan sesuai filter.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (
+                                paginatedHistory.map((item, index) => (
+                                    <tr key={item.id} className="hover:bg-slate-50/80 transition-colors group">
+                                        <td className="px-6 py-4 text-sm text-center text-slate-400 font-medium">
+                                            {startIndex + index + 1}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
+                                            <div className="flex flex-col">
+                                                <span className="font-semibold text-slate-700">
+                                                    {new Date(item.created_at).toLocaleDateString("id-ID", {
+                                                        day: 'numeric', month: 'long', year: 'numeric'
+                                                    })}
+                                                </span>
+                                                <span className="text-xs text-slate-400">
+                                                    {new Date(item.created_at).toLocaleTimeString("id-ID", {
+                                                        hour: '2-digit', minute: '2-digit'
+                                                    })} WIB
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-700 font-medium">
+                                            {item.student_name}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                                {item.exam_packages?.title || "-"}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className="inline-flex items-center justify-center px-3 py-1 rounded-lg bg-green-50 text-green-700 font-bold border border-green-200 text-sm">
                                                 {item.total_score}
                                             </span>
-                                        </div>
-                                    </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <Link
+                                                href={`/result/${item.id}`}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white text-xs font-medium rounded-lg hover:bg-indigo-600 transition-all shadow-sm active:scale-95"
+                                            >
+                                                Detail
+                                                <ChevronRight className="w-3 h-3" />
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
-                                    <Link
-                                        href={`/result/${item.id}`}
-                                        className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-indigo-600 transition-colors shadow-lg shadow-slate-200 hover:shadow-indigo-200 active:scale-95"
-                                    >
-                                        Detail
-                                        <ChevronRight className="w-4 h-4" />
-                                    </Link>
-                                </div>
-                            </div>
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+                        <div className="text-sm text-slate-500">
+                            Menampilkan <span className="font-bold text-slate-700">{startIndex + 1}</span> sampai <span className="font-bold text-slate-700">{Math.min(startIndex + ITEMS_PER_PAGE, filteredHistory.length)}</span> dari <span className="font-bold text-slate-700">{filteredHistory.length}</span> data
                         </div>
-                    ))
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        onClick={() => setCurrentPage(page)}
+                                        className={`
+                                            w-8 h-8 rounded-lg text-sm font-medium transition-all
+                                            ${currentPage === page
+                                                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200'
+                                                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}
+                                        `}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
