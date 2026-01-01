@@ -409,7 +409,7 @@ export default function ExamSubjectRunner() {
                                 </div>
                             </div>
 
-                            {/* Stimulus Section (Conditional) */}
+                            {/* Stimulus Section (Conditional) - HIDDEN BY REQUEST
                             {currentQuestion.stimulus && (
                                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                                     <div className="bg-slate-50 px-5 py-3 border-b border-slate-100 flex items-center gap-2">
@@ -421,6 +421,7 @@ export default function ExamSubjectRunner() {
                                     </div>
                                 </div>
                             )}
+                            */}
 
                             {/* Question Card */}
                             <QuestionCard
