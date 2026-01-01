@@ -1,0 +1,29 @@
+import React from "react";
+import { createClient } from "@/utils/supabase/client";
+import { Level } from "@/types";
+import StudentLayoutClient from "./StudentLayoutClient";
+
+// Fetch Levels Server-Side
+async function getLevels(): Promise<Level[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from('levels')
+        .select('id, name')
+        .order('name');
+
+    if (error) {
+        console.error("Fetch Levels Error:", error);
+        return [];
+    }
+    return data || [];
+}
+
+export default async function StudentLayout({ children }: { children: React.ReactNode }) {
+    const levels = await getLevels();
+
+    return (
+        <StudentLayoutClient levels={levels}>
+            {children}
+        </StudentLayoutClient>
+    );
+}
