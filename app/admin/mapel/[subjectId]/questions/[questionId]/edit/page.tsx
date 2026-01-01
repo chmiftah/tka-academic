@@ -26,6 +26,13 @@ interface Option {
     score_value: number | string;
 }
 
+interface DbOption {
+    id: number;
+    option_text: string;
+    is_correct: boolean;
+    score_value: number;
+}
+
 export default function EditQuestionPage() {
     const params = useParams();
     const router = useRouter();
@@ -99,7 +106,7 @@ export default function EditQuestionPage() {
                 if (oError) throw oError;
 
                 if (optionData) {
-                    setOptions(optionData.map(o => ({
+                    setOptions(optionData.map((o: DbOption) => ({
                         id: o.id,
                         option_text: o.option_text,
                         is_correct: o.is_correct,
