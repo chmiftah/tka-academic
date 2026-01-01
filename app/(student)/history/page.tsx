@@ -52,6 +52,16 @@ export default function HistoryPage() {
         const fetchHistory = async () => {
             const supabase = createClient();
 
+            // 0. Get User
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                setHistory([]);
+                setFilteredHistory([]);
+                setLoading(false);
+                return;
+            }
+
             // 1. Fetch Results first (No JOIN due to missing FK)
             const { data: results, error: resultError } = await supabase
                 .from("exam_results")
@@ -62,6 +72,7 @@ export default function HistoryPage() {
                     created_at,
                     exam_package_id
                 `)
+                .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
             if (resultError) {
@@ -155,7 +166,7 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="p-6 lg:p-10 max-w-[1920px] mx-auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-[1920px] space-y-8">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

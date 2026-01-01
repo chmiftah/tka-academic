@@ -39,6 +39,13 @@ interface Question {
     max_score?: number;
     options: Option[];
 }
+const supabase = await createClient();
+
+// 1. Auth Check
+const { data: { user }, error: authError } = await supabase.auth.getUser();
+if (authError || !user) {
+    throw new Error("Unauthorized: You must be logged in to submit.");
+}
 
 const EXAM_DURATION_SECONDS = 360; // 1 Hour
 
@@ -210,7 +217,8 @@ export default function ExamSubjectRunner() {
                 .from('exam_results')
                 .insert({
                     exam_package_id: params.packageId,
-                    student_name: 'Budi Santoso', // ToDo: Get real user name
+                    user_id: user.id, // Linked to authenticated user
+                    student_name: user.email, // Fallback display name
                     total_score: totalScore
                 })
                 .select()

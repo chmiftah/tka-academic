@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import StudentSidebar from "@/components/StudentSidebar";
+import { submitExam } from "../actions";
 
 // --- Types ---
 interface Option {
@@ -102,60 +103,18 @@ export default function ExamRunner() {
         }
     }, [params.packageId]);
 
-    const submitExam = async () => {
+
+
+    // ... inside component
+    const handleSubmitExam = async () => {
         if (!confirm("Apakah Anda yakin ingin menyelesaikan ujian?")) return;
         setLoading(true);
 
         try {
-            const supabase = createClient();
-            let totalScore = 0;
-            const detailedAnswers: { question_id: string; selected_option_id: number | null; is_correct: boolean; score_earned: number; }[] = [];
-
-            questions.forEach((q) => {
-                const selectedOptId = answers[q.id];
-                const selectedOption = q.options.find(opt => String(opt.id) === String(selectedOptId));
-
-                const isCorrect = selectedOption?.is_correct || false;
-                const score = isCorrect ? (selectedOption?.score || 0) : 0;
-
-                totalScore += score;
-
-                detailedAnswers.push({
-                    question_id: q.id,
-                    selected_option_id: selectedOptId ? parseInt(selectedOptId) : null,
-                    is_correct: isCorrect,
-                    score_earned: score
-                });
-            });
-
-            const { data: resultData, error: resultError } = await supabase
-                .from('exam_results')
-                .insert({
-                    exam_package_id: params.packageId,
-                    student_name: 'Budi Santoso',
-                    total_score: totalScore
-                })
-                .select()
-                .single();
-
-            if (resultError) throw resultError;
-
-            const answersToInsert = detailedAnswers.map(ans => ({
-                exam_result_id: resultData.id,
-                question_id: ans.question_id,
-                selected_option_id: ans.selected_option_id,
-                is_correct: ans.is_correct,
-                score_earned: ans.score_earned
-            }));
-
-            const { error: answersError } = await supabase
-                .from('student_answers')
-                .insert(answersToInsert);
-
-            if (answersError) throw answersError;
-
-            router.push(`/result/${resultData.id}`);
-
+            const result = await submitExam(params.packageId, answers);
+            if (result.success) {
+                router.push(`/result/${result.resultId}`);
+            }
         } catch (err: any) {
             console.error("Gagal submit:", err);
             alert("Terjadi kesalahan saat mengirim jawaban: " + err.message);
@@ -386,7 +345,7 @@ export default function ExamRunner() {
 
                                 {isLastQuestion ? (
                                     <button
-                                        onClick={submitExam}
+                                        onClick={handleSubmitExam}
                                         className="flex items-center gap-2 px-8 py-2.5 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 shadow-sm hover:shadow active:scale-95 transition-all"
                                     >
                                         <span>Selesai Ujian</span>
