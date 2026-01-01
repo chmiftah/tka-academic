@@ -4,9 +4,23 @@ import { cookies } from 'next/headers'
 export async function createClient() {
     const cookieStore = await cookies()
 
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    // If environment variables are missing (e.g. during build step), return a dummy client or throw specific error
+    if (!url || !key) {
+        // If we are just building, we might not have the env vars. 
+        // We can return a mock client or null, but type safety is tricky.
+        // Better to check if we are in a browser-like or safely ignore.
+        // Actually, createServerClient won't work without them. 
+        // Let's fallback to empty strings if missing, BUT logging a warning.
+        // This usually happens during `next build` static generation.
+        console.warn('Supabase Env Vars missing in server client. Using potentially unsafe defaults for build.')
+    }
+
     return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        url || '',
+        key || '',
         {
             cookies: {
                 getAll() {

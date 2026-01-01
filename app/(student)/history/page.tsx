@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
@@ -76,7 +78,7 @@ export default function HistoryPage() {
             }
 
             // 2. Extract Package IDs and Fetch Packages
-            const packageIds = Array.from(new Set(results.map(r => r.exam_package_id))).filter(Boolean);
+            const packageIds = Array.from(new Set(results.map((r: any) => r.exam_package_id))).filter(Boolean);
 
             let packagesMap: Record<number, { title: string, level_id: number }> = {};
 
@@ -89,14 +91,14 @@ export default function HistoryPage() {
                 if (packageError) {
                     console.error("Error fetching packages:", packageError);
                 } else if (packages) {
-                    packages.forEach(p => {
+                    packages.forEach((p: any) => {
                         packagesMap[p.id] = { title: p.title, level_id: p.level_id };
                     });
                 }
             }
 
             // 3. Merge Data
-            const mergedHistory: ExamHistory[] = results.map(r => ({
+            const mergedHistory: ExamHistory[] = results.map((r: any) => ({
                 ...r,
                 exam_packages: packagesMap[r.exam_package_id] || { title: "Ujian Tidak Diketahui", level_id: 0 }
             }));

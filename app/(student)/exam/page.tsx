@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createClient } from "@/utils/supabase/server";
 import { ExamPackage, Level } from '@/types';
 import LevelFilter from "@/components/dashboard/LevelFilter";

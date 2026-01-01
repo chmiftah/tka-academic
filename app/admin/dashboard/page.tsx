@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import React from 'react';
 import { Users, BookOpen, Files, CheckCircle } from 'lucide-react';
 
