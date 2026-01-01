@@ -1,9 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ExamPackage } from "@/types";
 import { ChevronRight, BookOpen, Clock, PlayCircle, Layers } from "lucide-react";
+
+// Helper component to safely render dates on client only to avoid hydration mismatch
+const ClientDate = ({ date }: { date: string }) => {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+
+    return <>{new Date(date).toLocaleDateString('id-ID', { dateStyle: 'long' })}</>;
+};
 
 interface PackageListProps {
     packages: ExamPackage[];
@@ -46,7 +58,7 @@ export default function PackageList({ packages }: PackageListProps) {
                                 {pkg.start_at && (
                                     <span className="text-white/80 text-xs font-medium flex items-center gap-1">
                                         <Clock className="w-3.5 h-3.5" />
-                                        {new Date(pkg.start_at).toLocaleDateString()}
+                                        <ClientDate date={pkg.start_at} />
                                     </span>
                                 )}
                             </div>

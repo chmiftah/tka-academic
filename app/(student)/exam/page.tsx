@@ -77,7 +77,7 @@ export default async function ExamListPage({ searchParams }: { searchParams: Pro
     ]);
 
     return (
-        <div className="min-h-screen p-6 lg:p-10 space-y-10 max-w-[1920px] mx-auto">
+        <div className="min-h-screen p-6 lg:p-10 space-y-10 max-w-[1920px]">
             {/* Modern Header Section */}
             <div className="relative rounded-3xl overflow-hidden bg-slate-900 text-white shadow-2xl shadow-indigo-200/50">
                 {/* Background Elements */}

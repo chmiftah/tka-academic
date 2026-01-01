@@ -16,6 +16,20 @@ interface ExamHistory {
         level_id: number;
     };
 }
+// Helper component to safely render dates on client only
+const ClientDate = ({ date, timeOnly = false, dateOnly = false }: { date: string, timeOnly?: boolean, dateOnly?: boolean }) => {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+
+    if (timeOnly) return <>{new Date(date).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })}</>;
+    if (dateOnly) return <>{new Date(date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}</>;
+
+    return <>{new Date(date).toLocaleString("id-ID")}</>;
+};
 
 const ITEMS_PER_PAGE = 10;
 
@@ -144,6 +158,9 @@ export default function HistoryPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Riwayat Ujian</h1>
+                    <Link href="/dashboard" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium md:hidden">
+                        Ke Dashboard
+                    </Link>
                     <p className="text-slate-500 mt-1">Daftar lengkap hasil ujian yang telah diselesaikan.</p>
                 </div>
             </div>
@@ -237,14 +254,10 @@ export default function HistoryPage() {
                                         <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
                                             <div className="flex flex-col">
                                                 <span className="font-semibold text-slate-700">
-                                                    {new Date(item.created_at).toLocaleDateString("id-ID", {
-                                                        day: 'numeric', month: 'long', year: 'numeric'
-                                                    })}
+                                                    <ClientDate date={item.created_at} dateOnly />
                                                 </span>
                                                 <span className="text-xs text-slate-400">
-                                                    {new Date(item.created_at).toLocaleTimeString("id-ID", {
-                                                        hour: '2-digit', minute: '2-digit'
-                                                    })} WIB
+                                                    <ClientDate date={item.created_at} timeOnly /> WIB
                                                 </span>
                                             </div>
                                         </td>
