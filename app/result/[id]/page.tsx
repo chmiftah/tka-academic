@@ -1,6 +1,7 @@
 "use client";
 
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -8,6 +9,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Loader2, CheckCircle2, XCircle, FileText, ArrowLeft, Trophy, Calendar, Clock, User } from "lucide-react";
 import Link from "next/link";
 import StudentSidebar from "@/components/StudentSidebar";
+import MathRenderer from "@/components/MathRenderer";
 
 interface ExamResult {
     id: string;
@@ -171,7 +173,7 @@ export default function ResultPage() {
 
                                 <div className="p-8">
                                     <div className="prose prose-slate max-w-none text-slate-800 mb-8 font-medium leading-relaxed">
-                                        <div dangerouslySetInnerHTML={{ __html: currentQuestion.question_text }} />
+                                        <MathRenderer text={currentQuestion.question_text} />
                                     </div>
 
                                     {/* Options */}
@@ -207,7 +209,9 @@ export default function ResultPage() {
                                                     `}
                                                 >
                                                     <div className="shrink-0">{icon}</div>
-                                                    <div className="text-slate-700 text-sm" dangerouslySetInnerHTML={{ __html: opt.option_text }} />
+                                                    <div className="text-slate-700 text-sm">
+                                                        <MathRenderer text={opt.option_text} />
+                                                    </div>
                                                 </div>
                                             );
                                         })}
@@ -221,7 +225,7 @@ export default function ResultPage() {
                                             <FileText className="w-4 h-4" /> Pembahasan
                                         </h3>
                                         <div className="prose prose-sm prose-blue max-w-none text-slate-700">
-                                            <div dangerouslySetInnerHTML={{ __html: currentQuestion.discussion }} />
+                                            <MathRenderer text={currentQuestion.discussion} />
                                         </div>
                                     </div>
                                 )}

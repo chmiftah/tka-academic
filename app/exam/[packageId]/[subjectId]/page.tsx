@@ -1,6 +1,8 @@
 "use client";
 
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import {
