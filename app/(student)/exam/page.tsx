@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { ExamPackage, Level } from '@/types';
 import LevelFilter from "@/components/dashboard/LevelFilter";
 import PackageList from "@/components/dashboard/PackageList";
@@ -6,7 +6,7 @@ import { Search } from "lucide-react";
 
 // Helper: Fetch Levels
 async function getLevels(): Promise<Level[]> {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('levels')
         .select('id, name')
@@ -21,7 +21,7 @@ async function getLevels(): Promise<Level[]> {
 
 // Helper: Fetch Packages (Optional Filter)
 async function getPackages(levelId?: string): Promise<ExamPackage[]> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     let query = supabase
         .from('exam_packages')

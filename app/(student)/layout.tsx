@@ -1,11 +1,11 @@
 import React from "react";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { Level } from "@/types";
 import StudentLayoutClient from "./StudentLayoutClient";
 
 // Fetch Levels Server-Side
 async function getLevels(): Promise<Level[]> {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('levels')
         .select('id, name')
