@@ -47,7 +47,7 @@ if (authError || !user) {
     throw new Error("Unauthorized: You must be logged in to submit.");
 }
 
-const EXAM_DURATION_SECONDS = 360; // 1 Hour
+const EXAM_DURATION_SECONDS = 2700;//45 minutes
 
 export default function ExamSubjectRunner() {
     const router = useRouter();
