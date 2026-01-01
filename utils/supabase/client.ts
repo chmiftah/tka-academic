@@ -5,14 +5,19 @@ export function createClient() {
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!url || !key) {
-        // Return a dummy client or throw a clearer error if needed, 
-        // but for build safety, we can just throw if strictly needed, 
-        // or return null/mock if we want to bypass during static gen.
-        // However, standard Next.js apps usually require these.
+        // During build/prerender (server-side), we might not have env vars if not configured in build environment.
+        // Don't crash the build.
         if (typeof window === 'undefined') {
-            // Server-side / Build time fallback?
-            // Actually, createBrowserClient is for browser.
+            console.warn("Supabase Env Vars missing during server-side render. Returning dummy client.");
+            // Return a dummy object explicitly cast as any to suppress type errors during build
+            // This method shouldn't be called for data fetching during prerender anyway if properly placed in useEffect
+            return {
+                from: () => ({ select: () => ({ data: [], error: null }) }),
+                auth: { getUser: () => ({ data: { user: null }, error: null }) }
+            } as any;
         }
+
+        // In browser, this is critical.
         throw new Error("Supabase URL and Anon Key are required!");
     }
 
