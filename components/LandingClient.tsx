@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { logout } from "@/app/auth/actions";
+import { User } from "@supabase/supabase-js";
 import {
     BookOpen,
     BarChart3,
@@ -34,7 +36,7 @@ const staggerContainer = {
     whileInView: { transition: { staggerChildren: 0.1 } }
 };
 
-export default function LandingClient() {
+export default function LandingClient({ user }: { user: User | null }) {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -80,18 +82,39 @@ export default function LandingClient() {
                     </div>
 
                     <div className="hidden lg:flex items-center gap-4">
-                        <Link
-                            href="/login"
-                            className="text-sm font-bold text-slate-600 hover:text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 transition-all"
-                        >
-                            Masuk
-                        </Link>
-                        <Link
-                            href="/register"
-                            className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                        >
-                            Daftar Gratis
-                        </Link>
+                        {user ? (
+                            <>
+                                <Link
+                                    href="/dashboard"
+                                    className="text-sm font-bold text-slate-600 hover:text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 transition-all"
+                                >
+                                    Dashboard
+                                </Link>
+                                <form action={logout}>
+                                    <button
+                                        type="submit"
+                                        className="bg-red-50 text-red-600 text-sm font-bold px-6 py-2.5 rounded-full hover:bg-red-100 transition-all"
+                                    >
+                                        Keluar
+                                    </button>
+                                </form>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="text-sm font-bold text-slate-600 hover:text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 transition-all"
+                                >
+                                    Masuk
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                >
+                                    Daftar Gratis
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     <button
@@ -203,17 +226,7 @@ export default function LandingClient() {
                                 </motion.div>
 
                                 {/* Floating Card 2 */}
-                                <motion.div
-                                    animate={{ y: [0, 10, 0] }}
-                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                                    className="absolute top-12 right-8 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/50"
-                                >
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="text-xs text-slate-500 font-bold uppercase">Nilai Rata-rata</div>
-                                        <Star className="w-4 h-4 text-orange-400 fill-orange-400" />
-                                    </div>
-                                    <div className="text-2xl font-extrabold text-slate-800">98.5</div>
-                                </motion.div>
+
                             </div>
 
                             {/* Decorative Blob behind image */}

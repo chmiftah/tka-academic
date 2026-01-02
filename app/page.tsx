@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import LandingClient from "@/components/LandingClient";
+import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "TKA CBT - Platform Ujian & Belajar Online Terbaik SD, SMP, SMA",
@@ -7,6 +8,9 @@ export const metadata: Metadata = {
   keywords: ["CBT", "Ujian Online", "TKA", "Tryout", "Bank Soal", "SD", "SMP", "SMA", "Kurikulum Merdeka"],
 };
 
-export default function Home() {
-  return <LandingClient />;
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  return <LandingClient user={user} />;
 }
