@@ -28,6 +28,7 @@ export async function signup(formData: FormData) {
 
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const fullName = formData.get("fullName") as string;
 
     // Sign up the user
     const { data, error } = await supabase.auth.signUp({
@@ -35,6 +36,10 @@ export async function signup(formData: FormData) {
         password,
         options: {
             emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+            data: {
+                full_name: fullName,
+                role: 'student',
+            }
         },
     });
 
@@ -42,13 +47,8 @@ export async function signup(formData: FormData) {
         return { error: error.message };
     }
 
-    if (data.user) {
-        // Create public user record
-        await supabase.from("users").insert({
-            email: email,
-            role: "STUDENT",
-        });
-    }
+    // Trigger on auth.users will handle profile creation
+    // if (data.user) { ... }
 
     revalidatePath("/", "layout");
     redirect("/dashboard");

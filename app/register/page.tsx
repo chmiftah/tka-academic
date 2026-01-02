@@ -102,6 +102,26 @@ export default function RegisterPage() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-4">
                             <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1" htmlFor="fullName">
+                                    Nama Lengkap
+                                </label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                        <User className="h-5 w-5" />
+                                    </div>
+                                    <input
+                                        id="fullName"
+                                        name="fullName"
+                                        type="text"
+                                        autoComplete="name"
+                                        required
+                                        placeholder="John Doe"
+                                        className="block w-full pl-11 pr-4 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none font-medium"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1" htmlFor="email">
                                     Email
                                 </label>
