@@ -1,4 +1,8 @@
 import Link from 'next/link';
+
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 import { createClient } from "@/utils/supabase/client";// Sesuaikan 
 import { notFound } from 'next/navigation';
 
