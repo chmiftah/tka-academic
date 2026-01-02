@@ -33,6 +33,10 @@ async function getPackages(levelId?: string): Promise<ExamPackage[]> {
       start_at, 
       end_at,
       level_id,
+      levels (
+        id,
+        name
+      ),
       package_subjects (
         subject:subjects (
           id, 

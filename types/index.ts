@@ -19,4 +19,5 @@ export interface ExamPackage {
     // Relasi (akan di-fetch via join)
     subjects?: Subject[];
     question_count?: number;
+    levels?: Level; // Added levels relation
 }
