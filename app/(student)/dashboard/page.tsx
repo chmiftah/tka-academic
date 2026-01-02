@@ -98,7 +98,7 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Available Packages Section (New) */}
-                <div>
+                {/* <div>
                     <h2 className="text-xl font-bold text-slate-800 mb-4">Paket Soal Terbaru</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {packages && packages.length > 0 ? packages.map((pkg: any) => (
@@ -121,7 +121,7 @@ export default async function DashboardPage() {
                             </div>
                         )}
                     </div>
-                </div>
+                </div> */}
             </main>
         </div>
     );

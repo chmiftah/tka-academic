@@ -42,7 +42,7 @@ export default function Home() {
 
                 <div className="mt-10 flex flex-col sm:flex-row gap-4">
                   <Link
-                    href="/daftar"
+                    href="/register"
                     className="group inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-[1.02]"
                   >
                     Mulai Ujian Gratis
@@ -193,8 +193,8 @@ export default function Home() {
               <div key={program.level} className="group relative overflow-hidden rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-2xl transition-all duration-300">
                 <div className="relative bg-white p-8">
                   <div className={`inline-flex items-center px-4 py-2 rounded-full ${program.color === 'red' ? 'bg-red-50 text-red-600' :
-                      program.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-                        'bg-slate-100 text-slate-600'
+                    program.color === 'blue' ? 'bg-blue-50 text-blue-600' :
+                      'bg-slate-100 text-slate-600'
                     } mb-6`}>
                     <span className="text-sm font-semibold">
                       {program.students}
