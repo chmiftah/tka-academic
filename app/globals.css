@@ -2,147 +2,168 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    /* Slate 50 */
-    --foreground: 222 47% 11%;
-    /* Slate 900 */
+    /* 
+      Material Design 3 Token Mappings 
+      Theme: Fresh Blue & Teal (Academic, Calm)
+    */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    /* Primary: Strong Blue #0061A4 (Tailwind Blue-600 ish) */
+    --md-sys-color-primary: 221 83% 53%;
+    /* #2563EB Blue-600 */
+    --md-sys-color-on-primary: 0 0% 100%;
+    /* #FFFFFF */
 
-    --primary: 226 71% 40%;
-    /* Modern Indigo */
-    --primary-foreground: 210 40% 98%;
+    /* Primary Container: Pale Sky Blue */
+    --md-sys-color-primary-container: 214 94% 94%;
+    /* #DBEAFE Blue-100 */
+    --md-sys-color-on-primary-container: 214 82% 13%;
+    /* #1e3a8a Blue-900 */
+
+    /* Secondary: Teal/Cool Grey-Blue */
+    --md-sys-color-secondary: 199 89% 48%;
+    /* #00b4d8 Cyan-500 ish */
+    --md-sys-color-on-secondary: 0 0% 100%;
+    --md-sys-color-secondary-container: 186 100% 94%;
+    /* Cyan-50 */
+    --md-sys-color-on-secondary-container: 192 85% 15%;
+    /* Cyan-900 */
+
+    /* Tertiary: Accent Color (maybe a soft Orange/Yellow for visual interest, keeping it minimal) */
+    --md-sys-color-tertiary: 25 95% 53%;
+    --md-sys-color-on-tertiary: 0 0% 100%;
+    --md-sys-color-tertiary-container: 33 100% 96%;
+
+    /* Error */
+    --md-sys-color-error: 0 84% 60%;
+    --md-sys-color-on-error: 0 0% 100%;
+    --md-sys-color-error-container: 0 93% 94%;
+    --md-sys-color-on-error-container: 0 74% 22%;
+
+    /* Backgrounds & Surfaces */
+    --md-sys-color-background: 240 21% 99%;
+    /* #FDFCFF - Very cool white */
+    --md-sys-color-on-background: 215 19% 11%;
+    /* Slate-900 */
+
+    --md-sys-color-surface: 240 21% 99%;
+    /* Same as background */
+    --md-sys-color-on-surface: 215 19% 11%;
+
+    --md-sys-color-surface-variant: 216 20% 95%;
+    /* Slate-50/100ish */
+    --md-sys-color-on-surface-variant: 215 16% 47%;
+    /* Slate-500 */
+
+    --md-sys-color-outline: 215 14% 34%;
+    /* Slate-700 - reduced opacity usually */
+    --md-sys-color-outline-variant: 220 13% 91%;
+    /* Slate-200 */
+
+    /* Radius */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 28px;
+    /* Standard MD3 corner */
+    --radius-full: 9999px;
+
+    /* Legacy Mappings for shadcn/compatibility if needed, mapped to MD3 tokens */
+    --background: var(--md-sys-color-background);
+    --foreground: var(--md-sys-color-on-background);
+
+    --card: 255 0% 100%;
+    /* Pure white cards usually in MD3 on light gray background */
+    --card-foreground: var(--md-sys-color-on-surface);
+
+    --popover: var(--md-sys-color-surface);
+    --popover-foreground: var(--md-sys-color-on-surface);
+
+    --primary: var(--md-sys-color-primary);
+    --primary-foreground: var(--md-sys-color-on-primary);
+
+    --secondary: var(--md-sys-color-secondary-container);
+    --secondary-foreground: var(--md-sys-color-on-secondary-container);
+
+    --muted: var(--md-sys-color-surface-variant);
+    --muted-foreground: var(--md-sys-color-on-surface-variant);
+
+    --accent: var(--md-sys-color-primary-container);
+    --accent-foreground: var(--md-sys-color-on-primary-container);
+
+    --destructive: var(--md-sys-color-error);
+    --destructive-foreground: var(--md-sys-color-on-error);
+
+    --border: var(--md-sys-color-outline-variant);
+    --input: var(--md-sys-color-outline-variant);
+    --ring: var(--md-sys-color-primary);
 
     --radius: 1rem;
+    /* Default fallback */
+  }
+
+  /* Material Design 3 Typography Baseline */
+  html {
+    font-family: var(--font-roboto), system-ui, sans-serif;
+    font-size: 14px;
+    /* High density base */
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-slate-50 text-slate-900;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    background-color: hsl(var(--md-sys-color-background));
+    color: hsl(var(--md-sys-color-on-background));
+  }
+
+  /* MD3 Elevation / Shadows */
+  .elevation-1 {
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+  }
+
+  .elevation-2 {
+    box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+  }
+
+  .elevation-3 {
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.30), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Utility classes */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-medium tracking-normal text-slate-900;
+    /* MD3 headings are often regular/medium weight, not bold */
   }
 }
 
 @layer utilities {
-  .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
-  }
-
-  .glass-dark {
-    @apply bg-slate-900/80 backdrop-blur-md border border-white/5 shadow-xl;
-  }
-
   .text-balance {
     text-wrap: balance;
   }
 
-  .safe-p {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+  /* MD3 State Layers */
+  .state-layer {
+    @apply relative overflow-hidden;
   }
 
-  /* Custom Scrollbar Utility */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  .state-layer::after {
+    content: "";
+    @apply absolute inset-0 bg-current opacity-0 transition-opacity duration-200 pointer-events-none;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+  .state-layer:hover::after {
+    @apply opacity-[0.08];
+    /* 8% opacity on hover */
   }
 
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
-    /* slate-200 */
-    border-radius: 10px;
+  .state-layer:active::after {
+    @apply opacity-[0.12];
+    /* 12% opacity on press */
   }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #cbd5e1;
-    /* slate-300 */
-  }
-}
-
-/* Custom Animations */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Add these to your global CSS file */
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes pulse-subtle {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-shimmer {
-  animation: shimmer 2s infinite linear;
-}
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
-
-/* Skeleton wave effect */
-.skeleton-wave {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Gradient skeleton background */
-.skeleton-gradient {
-  background: linear-gradient(90deg,
-      #f1f5f9 25%,
-      #e2e8f0 50%,
-      #f1f5f9 75%);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
 }

@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
-  variable: '--font-plus-jakarta',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: '--font-inter',
+  variable: '--font-roboto',
   display: 'swap',
 });
 
@@ -26,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${plusJakarta.variable} ${inter.variable}`}>
-      <body className="font-sans antialiased text-slate-800 bg-slate-50">
+    <html lang="id" className={`${roboto.variable}`}>
+      <body className="font-sans antialiased text-slate-900 bg-[#FDFCFF]">
         {children}
       </body>
     </html>

@@ -52,107 +52,127 @@ export default function QuestionCard({ question, index, flags, toggleFlag }: Que
         switch (question.type) {
             case 'CHECKLIST':
             case 'complex':
-                return "Pilih satu atau lebih jawaban";
-            case 'TRUE_FALSE': return "Pilih opsi Benar atau Salah";
+                return "Pilih satu atau lebih jawaban (Multi-select)";
+            case 'TRUE_FALSE': return "Tentukan pernyataan Benar atau Salah";
             default: return "Pilih satu jawaban yang paling tepat";
         }
     };
 
+    const isComplexOrChecklist = question.type === 'CHECKLIST' || question.type === 'complex';
+
     return (
-        <div className={`flex flex-col ${question.stimulus ? 'md:w-1/2' : 'w-full max-w-3xl mx-auto'}`}>
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 flex-1">
-                <div className="flex items-start justify-between mb-4">
-                    <div className="flex flex-col gap-1">
+        <div className={`flex flex-col ${question.stimulus ? 'md:w-1/2' : 'w-full max-w-4xl mx-auto'}`}>
+            <div className="bg-white rounded-[28px] shadow-sm border border-slate-100 p-6 sm:p-8 flex-1">
+                {/* Header Section */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2">
-                            <h2 className="text-sm font-bold text-blue-600/80 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wide">
-                                Soal No. {index + 1}
-                            </h2>
-                            <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-1 rounded border border-slate-200">
-                                {question.type === 'SINGLE_CHOICE' || question.type === 'PG' ? 'Pilihan Ganda' : (question.type === 'CHECKLIST' || question.type === 'complex') ? 'Pilihan Majemuk' : 'Benar / Salah'}
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold shadow-sm">
+                                {index + 1}
+                            </div>
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-3 py-1 rounded-full">
+                                {question.type === 'SINGLE_CHOICE' || question.type === 'PG' ? 'Pilihan Ganda' : (isComplexOrChecklist) ? 'Pilihan Majemuk' : 'Benar / Salah'}
                             </span>
                         </div>
-                        <p className="text-xs text-slate-500 ml-1 mt-1">{getHelperText()}</p>
+                        <p className="text-xs text-slate-500 font-medium pl-1">{getHelperText()}</p>
                     </div>
 
                     <button
                         onClick={toggleFlag}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${flags.has(question.id) ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'text-slate-500 hover:bg-slate-100'}`}
+                        className={`
+                            flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all
+                            ${flags.has(question.id)
+                                ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                                : 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                            }
+                        `}
                     >
-                        <Flag className={`w-4 h-4 ${flags.has(question.id) ? 'fill-current' : ''}`} />
-                        <span className="hidden sm:inline">Ragu-ragu</span>
+                        <Flag className={`w-3.5 h-3.5 ${flags.has(question.id) ? 'fill-current' : ''}`} />
+                        <span>{flags.has(question.id) ? 'Ditandai' : 'Tandai Ragu'}</span>
                     </button>
                 </div>
 
+                {/* Question Text */}
                 <div className="prose prose-slate max-w-none mb-8">
-                    <div className="text-lg md:text-xl font-medium text-slate-900 leading-relaxed">
-                        <MathRenderer text={question.text} block={false} /> {/* Used MathRenderer for question text */}
+                    <div className="text-lg md:text-xl font-medium text-slate-800 leading-relaxed tracking-tight">
+                        <MathRenderer text={question.text} block={false} />
                     </div>
                 </div>
 
-                <div className={`grid gap-3 ${question.type === 'TRUE_FALSE' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                {/* Options Grid */}
+                <div className={`grid gap-4 ${question.type === 'TRUE_FALSE' ? 'grid-cols-2' : 'grid-cols-1'}`}>
                     {question.options.map((option, optionIndex) => {
                         const selected = selectedIds.includes(String(option.id));
                         const letter = String.fromCharCode(65 + optionIndex); // A, B, C...
 
-                        // Render Checkbox Icon for CHECKLIST and 'complex'
-                        const renderIcon = () => {
-                            if (question.type === 'CHECKLIST' || question.type === 'complex') {
-                                return selected
-                                    ? <div className="w-5 h-5 bg-blue-600 rounded flex items-center justify-center text-white"><Check className="w-3.5 h-3.5" /></div>
-                                    : <div className="w-5 h-5 border-2 border-slate-300 rounded bg-white" />;
-                            }
-                            // Default to Radio for SINGLE_CHOICE, 'PG' and TRUE_FALSE (though TF is card style)
-                            return selected
-                                ? <CircleDot className="w-5 h-5 text-blue-600 fill-current" />
-                                : <Circle className="w-5 h-5 text-slate-300" />;
-                        };
+                        // Render Logic
+                        const isPG = question.type === 'PG' || question.type === 'SINGLE_CHOICE';
 
                         return (
                             <button
                                 key={option.id}
                                 onClick={() => handleSelect(String(option.id))}
                                 className={`
-                                    w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center group
+                                    relative w-full text-left p-4 rounded-2xl border-2 transition-all duration-200 flex items-center group
                                     ${selected
-                                        ? 'border-blue-600 bg-blue-50/50 shadow-sm ring-1 ring-blue-600/20'
-                                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                                        ? 'border-blue-600 bg-blue-50/50 shadow-sm ring-1 ring-blue-600/20 z-10'
+                                        : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50 bg-white'
                                     }
-                                    ${question.type === 'TRUE_FALSE' ? 'justify-center text-center flex-col gap-2 py-6' : 'flex-row'}
+                                    ${question.type === 'TRUE_FALSE' ? 'flex-col justify-center text-center py-8 gap-3' : 'flex-row gap-4'}
                                 `}
                             >
+                                {/* Indicator / Icon */}
                                 {question.type !== 'TRUE_FALSE' && (
-                                    <div className="mr-4 shrink-0 transition-colors">
-                                        {/* Conditional rendering for PG type with letter, otherwise use renderIcon */}
-                                        {question.type === 'PG' ? (
-                                            <div className={`flex-shrink-0 mt-0.5 w-8 h-8 flex items-center justify-center rounded-lg border transition-colors
+                                    <div className="shrink-0">
+                                        {isPG ? (
+                                            <div className={`
+                                                w-10 h-10 flex items-center justify-center rounded-full text-sm font-bold transition-all duration-200
                                                 ${selected
-                                                    ? 'bg-blue-600 border-blue-600 text-white'
-                                                    : 'bg-white border-slate-300 text-slate-500 group-hover:border-blue-400'
+                                                    ? 'bg-blue-600 text-white shadow-md scale-105'
+                                                    : 'bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-600'
                                                 }
                                             `}>
-                                                <span className="font-bold">{letter}</span>
+                                                {letter}
                                             </div>
                                         ) : (
-                                            renderIcon()
+                                            /* Checkbox style for Multiple Choice */
+                                            <div className={`
+                                                w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200
+                                                ${selected
+                                                    ? 'bg-blue-600 border-blue-600 text-white'
+                                                    : 'border-slate-300 bg-white group-hover:border-blue-400'
+                                                }
+                                            `}>
+                                                {selected && <Check className="w-4 h-4" strokeWidth={3} />}
+                                            </div>
                                         )}
                                     </div>
                                 )}
 
-                                <span className={`text-base ${selected ? 'text-blue-900 font-medium' : 'text-slate-700'} ${question.type === 'TRUE_FALSE' ? 'text-lg font-bold' : ''}`}>
-                                    <MathRenderer text={option.text} /> {/* Used MathRenderer for option text */}
-                                </span>
+                                {/* Option Text */}
+                                <div className="flex-1 min-w-0">
+                                    <span className={`
+                                        text-base leading-snug break-words
+                                        ${selected ? 'text-blue-900 font-semibold' : 'text-slate-700 font-normal'} 
+                                        ${question.type === 'TRUE_FALSE' ? 'text-lg' : ''}
+                                    `}>
+                                        <MathRenderer text={option.text} />
+                                    </span>
+                                </div>
 
-                                {question.type === 'TRUE_FALSE' && selected && (
-                                    <div className="mt-1 text-blue-600">
-                                        <div className="w-6 h-1 bg-blue-600 rounded-full mx-auto" />
+                                {/* Active State Decoration (Right side check) */}
+                                {selected && isPG && (
+                                    <div className="absolute right-4 text-blue-600 animate-in fade-in zoom-in duration-200">
+                                        <CheckCircle2 className="w-6 h-6 fill-blue-100" />
                                     </div>
                                 )}
-                                {/* Checkmark Indicator for complex type */}
-                                {(question.type === 'complex' || question.type === 'CHECKLIST') && selected && (
-                                    <div className="text-blue-600 animate-in zoom-in duration-200 ml-auto">
-                                        <CheckCircle2 className="w-6 h-6" />
+
+                                {isComplexOrChecklist && selected && (
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 text-blue-400">
+                                        <Check className="w-5 h-5" />
                                     </div>
                                 )}
+
                             </button>
                         );
                     })}

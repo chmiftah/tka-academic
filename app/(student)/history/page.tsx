@@ -166,134 +166,124 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="p-6 lg:p-10 max-w-[1920px] space-y-8">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2 border-b border-slate-200">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Riwayat Ujian</h1>
-                    <Link href="/dashboard" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium md:hidden">
-                        Ke Dashboard
-                    </Link>
-                    <p className="text-slate-500 mt-1">Daftar lengkap hasil ujian yang telah diselesaikan.</p>
+                    <h1 className="text-xl font-bold text-slate-900">Exam History</h1>
+                    <p className="text-slate-500 text-sm mt-0.5">Track your past performance and scores.</p>
                 </div>
+                <Link href="/dashboard" className="text-xs font-medium text-indigo-600 hover:text-indigo-800 md:hidden">
+                    &larr; Back to Dashboard
+                </Link>
             </div>
 
             {/* Filters */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-                    <Filter className="w-4 h-4" />
-                    Filter Data
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                    <Filter className="w-3 h-3" />
+                    Filters
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1">Tanggal</label>
                         <input
                             type="date"
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all text-slate-600"
                             value={filterDate}
                             onChange={(e) => setFilterDate(e.target.value)}
                         />
                     </div>
-                    <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1">Nama Siswa</label>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <input
-                                type="text"
-                                placeholder="Cari nama..."
-                                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all"
-                                value={filterName}
-                                onChange={(e) => setFilterName(e.target.value)}
-                            />
-                        </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Student Name..."
+                            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all"
+                            value={filterName}
+                            onChange={(e) => setFilterName(e.target.value)}
+                        />
+                    </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Package Title..."
+                            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all"
+                            value={filterPackage}
+                            onChange={(e) => setFilterPackage(e.target.value)}
+                        />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1">Paket Soal</label>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <input
-                                type="text"
-                                placeholder="Cari paket..."
-                                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all"
-                                value={filterPackage}
-                                onChange={(e) => setFilterPackage(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex items-end">
                         <button
                             onClick={resetFilters}
-                            className="w-full px-4 py-2 bg-slate-100 text-slate-600 font-medium text-sm rounded-xl hover:bg-slate-200 hover:text-slate-800 transition-colors flex items-center justify-center gap-2"
+                            className="w-full px-4 py-2 bg-slate-100 text-slate-600 font-medium text-xs rounded-lg hover:bg-slate-200 hover:text-slate-800 transition-colors flex items-center justify-center gap-2"
                         >
-                            <X className="w-4 h-4" />
-                            Reset Filter
+                            <X className="w-3.5 h-3.5" />
+                            Reset
                         </button>
                     </div>
                 </div>
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-slate-50 border-b border-slate-200">
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-16 text-center">No</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal & Waktu</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Siswa</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Paket Soal</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Nilai</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Aksi</th>
+                            <tr className="bg-slate-50/50 border-b border-slate-200">
+                                <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider w-12 text-center">No</th>
+                                <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Date & Time</th>
+                                <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Student</th>
+                                <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Package</th>
+                                <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Score</th>
+                                <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {paginatedHistory.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
-                                        <div className="flex flex-col items-center justify-center gap-3">
-                                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center">
-                                                <Search className="w-6 h-6 text-slate-300" />
-                                            </div>
-                                            <p>Data tidak ditemukan sesuai filter.</p>
+                                    <td colSpan={6} className="px-6 py-10 text-center text-slate-500">
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            <Search className="w-5 h-5 text-slate-300" />
+                                            <p className="text-sm">No records found matching filters.</p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
                                 paginatedHistory.map((item, index) => (
-                                    <tr key={item.id} className="hover:bg-slate-50/80 transition-colors group">
-                                        <td className="px-6 py-4 text-sm text-center text-slate-400 font-medium">
+                                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                                        <td className="px-4 py-3 text-xs text-center text-slate-400 font-medium">
                                             {startIndex + index + 1}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
+                                        <td className="px-4 py-3 text-xs whitespace-nowrap">
                                             <div className="flex flex-col">
                                                 <span className="font-semibold text-slate-700">
                                                     <ClientDate date={item.created_at} dateOnly />
                                                 </span>
-                                                <span className="text-xs text-slate-400">
+                                                <span className="text-[10px] text-slate-400">
                                                     <ClientDate date={item.created_at} timeOnly /> WIB
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-700 font-medium">
+                                        <td className="px-4 py-3 text-xs text-slate-700 font-medium">
                                             {item.student_name}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                        <td className="px-4 py-3 text-xs text-slate-600">
+                                            <span className="truncate max-w-[200px] block" title={item.exam_packages?.title || "-"}>
                                                 {item.exam_packages?.title || "-"}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <span className="inline-flex items-center justify-center px-3 py-1 rounded-lg bg-green-50 text-green-700 font-bold border border-green-200 text-sm">
+                                        <td className="px-4 py-3 text-center">
+                                            <span className="inline-flex items-center justify-center min-w-[30px] px-2 py-0.5 rounded-md bg-green-50 text-green-700 font-bold border border-green-200 text-xs shadow-sm">
                                                 {item.total_score}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-4 py-3 text-center">
                                             <Link
                                                 href={`/result/${item.id}`}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white text-xs font-medium rounded-lg hover:bg-indigo-600 transition-all shadow-sm active:scale-95"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-slate-200 text-slate-700 text-[10px] font-bold uppercase tracking-wide rounded-md hover:bg-slate-50 hover:text-indigo-600 hover:border-indigo-200 transition-all shadow-sm"
                                             >
-                                                Detail
-                                                <ChevronRight className="w-3 h-3" />
+                                                Review
                                             </Link>
                                         </td>
                                     </tr>
@@ -305,42 +295,27 @@ export default function HistoryPage() {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                    <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50">
-                        <div className="text-sm text-slate-500">
-                            Menampilkan <span className="font-bold text-slate-700">{startIndex + 1}</span> sampai <span className="font-bold text-slate-700">{Math.min(startIndex + ITEMS_PER_PAGE, filteredHistory.length)}</span> dari <span className="font-bold text-slate-700">{filteredHistory.length}</span> data
+                    <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+                        <div className="text-xs text-slate-500">
+                            Showing <span className="font-semibold text-slate-700">{startIndex + 1}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredHistory.length)}</span> of <span className="font-semibold text-slate-700">{filteredHistory.length}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
                             <button
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="p-1.5 rounded-md border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-50 transition-all"
                             >
-                                <ChevronLeft className="w-4 h-4" />
+                                <ChevronLeft className="w-3.5 h-3.5" />
                             </button>
-
-                            <div className="flex items-center gap-1">
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                    <button
-                                        key={page}
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`
-                                            w-8 h-8 rounded-lg text-sm font-medium transition-all
-                                            ${currentPage === page
-                                                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200'
-                                                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}
-                                        `}
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
-                            </div>
-
+                            <span className="text-xs font-medium text-slate-600 px-2">
+                                Page {currentPage}
+                            </span>
                             <button
                                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
-                                className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="p-1.5 rounded-md border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-50 transition-all"
                             >
-                                <ChevronRight className="w-4 h-4" />
+                                <ChevronRight className="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </div>

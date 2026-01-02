@@ -83,54 +83,44 @@ export default async function ExamListPage({ searchParams }: { searchParams: Pro
     ]);
 
     return (
-        <div className="min-h-screen p-6 lg:p-10 space-y-10 max-w-[1920px]">
-            {/* Modern Header Section */}
-            <div className="relative rounded-3xl overflow-hidden bg-slate-900 text-white shadow-2xl shadow-indigo-200/50">
-                {/* Background Elements */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
-
-                <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="max-w-xl text-center md:text-left">
-                        <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-indigo-200 text-xs font-bold uppercase tracking-widest border border-white/5 mb-4">
-                            Katalog Ujian
-                        </span>
-                        <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
-                            Asah Kemampuanmu <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Raih Prestasi Terbaik</span>
-                        </h1>
-                        <p className="text-slate-300 text-lg leading-relaxed">
-                            Pilih paket ujian yang sesuai dengan jenjang dan kebutuhan belajarmu. Kerjakan sekarang dan evaluasi hasilnya.
-                        </p>
+        <div className="space-y-6">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+                <div>
+                    <span className="inline-block px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-widest border border-indigo-100 mb-2">
+                        Katalog Ujian
+                    </span>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                        Available Exams
+                    </h1>
+                    <p className="text-slate-500 text-sm mt-1 max-w-2xl">
+                        Select an exam package to start testing your knowledge.
+                    </p>
+                </div>
+                <div className="flex gap-4 text-xs font-medium text-slate-500">
+                    <div className="flex flex-col items-end">
+                        <span className="text-2xl font-bold text-slate-900">{packages.length}</span>
+                        <span>Paket</span>
                     </div>
-
-                    {/* Stats or Illustration Placeholder */}
-                    <div className="hidden md:flex gap-6">
-                        <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl text-center min-w-[140px]">
-                            <div className="text-3xl font-bold text-white mb-1">{packages.length}</div>
-                            <div className="text-xs font-medium text-slate-400 uppercase tracking-wider">Paket Tersedia</div>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl text-center min-w-[140px]">
-                            <div className="text-3xl font-bold text-indigo-400 mb-1">{levels.length}</div>
-                            <div className="text-xs font-medium text-slate-400 uppercase tracking-wider">Jenjang</div>
-                        </div>
+                    <div className="flex flex-col items-end border-l border-slate-200 pl-4">
+                        <span className="text-2xl font-bold text-slate-900">{levels.length}</span>
+                        <span>Level</span>
                     </div>
                 </div>
             </div>
 
             {/* Filter Bar */}
-            <div className="sticky top-4 z-20 bg-white/80 backdrop-blur-xl border border-slate-200 p-4 rounded-2xl shadow-lg shadow-slate-200/50 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="relative w-full md:w-96 group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-                    {/* Placeholder search input - Logic to be implemented or simply purely visual for now */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-1 rounded-xl">
+                <div className="relative w-full md:w-80 group">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
                     <input
                         type="text"
                         placeholder="Cari paket ujian..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all"
+                        className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all placeholder:text-slate-400"
                     />
                 </div>
 
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                    <span className="hidden md:block text-sm font-semibold text-slate-500">Filter:</span>
+                <div className="flex items-center gap-2 w-full md:w-auto">
                     <LevelFilter levels={levels} />
                 </div>
             </div>
